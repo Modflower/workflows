@@ -64,13 +64,15 @@ jobs:
           CHANGELOG: ${{ inputs.changelog }}
       - name: :3
         shell: bash
+        env:
+          paths: ${{ inputs.artifacts }}
         run: |
-          alias  _date="date +%H:%M:%S"
-          alias _trace='echo -e "[$(_date)] [\e[35mTRACE\e[0m]"'
-          alias _debug='echo -e "[$(_date)] [\e[34mDEBUG\e[0m]"'
-          alias  _info='echo -e "[$(_date)] [\e[32mINFO\e[0m]"'
-          alias  _warn='echo -e "[$(_date)] [\e[33mWARN\e[0m]"'
-          alias _error='echo -e "[$(_date)] [\e[31mERROR\e[0m]"'
+          _date() { date +%H:%M:%S; }
+          _trace() { echo -e "[$(_date)] [\e[35mTRACE\e[0m]" "$@"; }
+          _debug() { echo -e "[$(_date)] [\e[34mDEBUG\e[0m]" "$@"; }
+          _info() { echo -e "[$(_date)] [\e[32mINFO\e[0m]" "$@"; }
+          _warn() { echo -e "[$(_date)] [\e[33mWARN\e[0m]" "$@"; }
+          _error() { echo -e "[$(_date)] [\e[31mERROR\e[0m]" "$@"; }
           trace() { _trace "$@"; "$@"; }
 
           _flwr_deny=()
