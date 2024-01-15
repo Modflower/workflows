@@ -1,0 +1,73 @@
+name: Publish release
+
+on:
+  workflow_call:
+    inputs:
+      submodules:
+        description: 'Whether to checkout submodules'
+        default: false
+        required: false
+        type: boolean
+      java-version:
+        description: 'Java version to compile with'
+        default: 17
+        required: false
+        type: number
+      gradle-build:
+        description: 'Gradle build command'
+        default: './gradlew build'
+        required: false
+        type: string
+      changelog:
+        description: 'The changelog to publish'
+        default: ${{ github.event.release.body }}
+        required: false
+        type: string
+      artifacts:
+        description: 'The location of the build artifacts'
+        default: 'build/libs/*'
+        required: false
+        type: string
+    secrets:
+      MODRINTH:
+        required: false
+      CURSEFORGE:
+        required: false
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: ${{ inputs.submodules }}
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+      - name: Build and publish with Gradle
+        run: ${{ inputs.gradle-build }} ${{ secrets.modrinth != null && 'modrinth' || '' }} ${{ secrets.curseforge != null && 'curseforge' || '' }} --continue --no-daemon
+        env:
+          BUILD_RELEASE: ${{github.event.prelease == false}}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE }}
+          CHANGELOG: ${{ inputs.changelog }}
+      - name: Upload build artifacts
+        if: always()
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: ${{ inputs.artifacts }}
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+
