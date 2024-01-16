@@ -62,7 +62,7 @@ jobs:
           distribution: temurin
           java-version: ${{ inputs.java-version }}
       - name: Build and publish with Gradle
-        run: ${{ inputs.gradle-build }} ${{ inputs.gradle-publish || (secrets.modrinth != null && 'modrinth' || '') + ' ' + (secrets.curseforge != null && 'curseforge' || '') }} --continue --no-daemon
+        run: ${{ inputs.gradle-build }} ${{ inputs.gradle-publish || format('{0} {1}', secrets.modrinth != null && 'modrinth' || '', secrets.curseforge != null && 'curseforge' || '') }} --continue --no-daemon
         env:
           BUILD_RELEASE: ${{github.event.prelease == false}}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH }}
