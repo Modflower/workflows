@@ -65,6 +65,7 @@ jobs:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE }}
           CHANGELOG: ${{ inputs.changelog }}
       - name: :3
+        if: always()
         shell: bash
         env:
           paths: ${{ inputs.artifacts }}
