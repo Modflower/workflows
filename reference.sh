@@ -12,7 +12,7 @@ _flwr_deny=()
 _flwr_allow=()
 trace mkdir -p /tmp/_flwr/pool
 
-: () { while read -r path; do _debug "$path"; if [[ "$path" == \!* ]]; then _flwr_deny+=("${path#*\!}"); else _flwr_allow+=("$path"); fi; done };:<<<"$paths"
+{ while read -r path; do _debug "$path"; if [[ "$path" == \!* ]]; then _flwr_deny+=("${path#*\!}"); else _flwr_allow+=("$path"); fi; done }<<<"$paths"
 
 _debug _flwr_deny -\> "${_flwr_deny[@]}"
 _debug _flwr_allow -\> "${_flwr_allow[@]}"
