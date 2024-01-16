@@ -18,6 +18,10 @@ on:
         default: './gradlew build'
         required: false
         type: string
+      gradle-publish:
+        description: 'Gradle publish command'
+        required: false
+        type: string
       changelog:
         description: 'The changelog to publish'
         default: ${{ github.event.release.body }}
@@ -58,7 +62,7 @@ jobs:
           distribution: temurin
           java-version: ${{ inputs.java-version }}
       - name: Build and publish with Gradle
-        run: ${{ inputs.gradle-build }} ${{ secrets.modrinth != null && 'modrinth' || '' }} ${{ secrets.curseforge != null && 'curseforge' || '' }} --continue --no-daemon
+        run: ${{ inputs.gradle-build }} ${{ inputs.gradle-publish || (secrets.modrinth != null && 'modrinth' || '') + ' ' + (secrets.curseforge != null && 'curseforge' || '') }} --continue --no-daemon
         env:
           BUILD_RELEASE: ${{github.event.prelease == false}}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH }}
