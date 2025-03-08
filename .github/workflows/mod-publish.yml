@@ -48,8 +48,8 @@ jobs:
         with:
           fetch-depth: 1
           submodules: ${{ inputs.submodules }}
-      - uses: gradle/wrapper-validation-action@v1
-      - uses: actions/cache@v3
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
