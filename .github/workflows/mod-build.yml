@@ -8,6 +8,11 @@ on:
         default: false
         required: false
         type: boolean
+      java-version:
+        description: 'Java version to compile with'
+        default: 17
+        required: false
+        type: number
       artifacts:
         description: 'The location of the build artifacts'
         default: |
@@ -35,7 +40,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: ${{ inputs.java-version }}
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
       - name: Upload build artifacts
