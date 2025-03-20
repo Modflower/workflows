@@ -17,6 +17,8 @@ trace mkdir -p /tmp/_flwr/pool
 _debug _flwr_deny -\> "${_flwr_deny[@]}"
 _debug _flwr_allow -\> "${_flwr_allow[@]}"
 
+succeeded=1
+
 for v in "${_flwr_allow[@]}"; do
 	_info "Iterating over $v"
 	for i in $v; do
@@ -26,6 +28,16 @@ for v in "${_flwr_allow[@]}"; do
 				continue 2;
 			fi
 		done
-		trace mv "$i" /tmp/_flwr/pool/
+		if trace mv -v "$i" /tmp/_flwr/pool/; then
+			succeeded=0
+		else
+			_warn "Could not move $i, mv returned: $?"
+		fi
 	done
 done
+
+if [ $succeeded -ne 0 ]; then
+	_error "Did not find files to move."
+fi
+
+exit $succeeded
